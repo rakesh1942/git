@@ -1,0 +1,30 @@
+pipeline {
+    agent any 
+    tools {
+        maven "maven"
+    }
+    stages {
+        stage("code") {
+            steps {
+                git "https://github.com/devops0014/one.git"
+            }
+        }
+        stage("CQA") {
+            steps {
+                withSonarQubeEnv("sonar") {
+                    sh '''
+                    mvn sonar:sonar \
+                        -Dsonar.projectKey=myproject \
+                        -Dsonar.host.url=http://54.145.244.55:9000 \
+                        -Dsonar.login=652258350f28750b44ccad69734880e25eccfd7c
+                    '''
+                }
+            }
+        }
+        stage("Build") {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+    }
+}
